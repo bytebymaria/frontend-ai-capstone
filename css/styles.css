@@ -275,7 +275,7 @@ select {
   padding: 0.625rem 0.75rem;
   font: inherit;
   color: var(--color-text);
-  background: var(--color-bg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -291,8 +291,10 @@ select:focus {
 }
 
 input[aria-invalid="true"],
-textarea[aria-invalid="true"] {
+textarea[aria-invalid="true"],
+select[aria-invalid="true"] {
   border-color: var(--color-error-text);
+  box-shadow: 0 0 0 3px rgb(220 38 38 / 12%);
 }
 
 textarea {
@@ -379,7 +381,11 @@ textarea {
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
 }
 
 .button--primary {
@@ -421,5 +427,20 @@ textarea {
 @media (min-width: 640px) {
   .form-actions {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .settings-section {
+    padding: 1.25rem;
+  }
+
+  .toggle-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle-field input[type="checkbox"] {
+    margin-top: 0.25rem;
   }
 }

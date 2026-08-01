@@ -1,89 +1,40 @@
-const STORAGE_KEY = "capstone-settings";
-
-const DEFAULT_SETTINGS = {
-  displayName: "",
-  email: "",
-  bio: "",
-  theme: "system",
-  language: "en",
-  timezone: "UTC",
-  emailNotifications: true,
-  pushNotifications: false,
-  marketingEmails: false,
-  profileVisibility: "team",
-  shareUsageData: true,
-};
+import {
+  STORAGE_KEY,
+  DEFAULT_SETTINGS,
+  TRANSLATIONS,
+  applyTheme,
+  getLanguageText,
+  loadSettings,
+  saveSettings,
+  resetSettings,
+  validateSettingsData,
+} from "./settings-core.js";
 
 const form = document.getElementById("settings-form");
 const statusMessage = document.getElementById("status-message");
 const resetButton = document.getElementById("reset-button");
+const displayNameField = document.getElementById("display-name");
+const emailField = document.getElementById("email");
 const bioField = document.getElementById("bio");
 const bioCounter = document.getElementById("bio-counter");
 const themeField = document.getElementById("theme");
+const languageField = document.getElementById("language");
+const timezoneField = document.getElementById("timezone");
+const emailNotificationsField = document.getElementById("email-notifications");
+const pushNotificationsField = document.getElementById("push-notifications");
+const marketingEmailsField = document.getElementById("marketing-emails");
+const profileVisibilityField = document.getElementById("profile-visibility");
+const shareUsageDataField = document.getElementById("share-usage-data");
 
 const toggleFields = form.querySelectorAll('input[type="checkbox"][role="switch"]');
+const i18nKeys = Array.from(document.querySelectorAll("[data-i18n-key]"));
+const i18nPlaceholders = Array.from(document.querySelectorAll("[data-i18n-placeholder-key]"));
 
-function loadSettings() {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return { ...DEFAULT_SETTINGS };
-    }
-
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
-  } catch {
-    return { ...DEFAULT_SETTINGS };
-  }
-}
-
-function saveSettings(settings) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-}
-
-function applyTheme(theme) {
-  if (theme === "system") {
-    document.documentElement.removeAttribute("data-theme");
-    return;
-  }
-
-  document.documentElement.setAttribute("data-theme", theme);
-}
-
-function populateForm(settings) {
-  form.displayName.value = settings.displayName;
-  form.email.value = settings.email;
-  form.bio.value = settings.bio;
-  form.theme.value = settings.theme;
-  form.language.value = settings.language;
-  form.timezone.value = settings.timezone;
-  form.emailNotifications.checked = settings.emailNotifications;
-  form.pushNotifications.checked = settings.pushNotifications;
-  form.marketingEmails.checked = settings.marketingEmails;
-  form.profileVisibility.value = settings.profileVisibility;
-  form.shareUsageData.checked = settings.shareUsageData;
-
-  toggleFields.forEach((input) => {
-    input.setAttribute("aria-checked", String(input.checked));
+function updateBioCounter() {
+  const length = bioField.value.length;
+  bioCounter.textContent = getLanguageText(languageField.value, "bioCounter", {
+    count: length,
   });
-
-  updateBioCounter();
-  applyTheme(settings.theme);
-}
-
-function getFormData() {
-  return {
-    displayName: form.displayName.value.trim(),
-    email: form.email.value.trim(),
-    bio: form.bio.value.trim(),
-    theme: form.theme.value,
-    language: form.language.value,
-    timezone: form.timezone.value,
-    emailNotifications: form.emailNotifications.checked,
-    pushNotifications: form.pushNotifications.checked,
-    marketingEmails: form.marketingEmails.checked,
-    profileVisibility: form.profileVisibility.value,
-    shareUsageData: form.shareUsageData.checked,
-  };
 }
 
 function showStatus(message, type = "success") {
@@ -118,29 +69,83 @@ function clearFieldErrors() {
   });
 }
 
-function validateForm(data) {
-  clearFieldErrors();
-  let isValid = true;
+function applyTranslations(language) {
+  const locale = TRANSLATIONS[language] ? language : "en";
+  const translationSet = TRANSLATIONS[locale];
 
-  if (data.displayName.length < 2) {
-    setFieldError("display-name", "Display name must be at least 2 characters.");
-    isValid = false;
-  }
+  i18nKeys.forEach((element) => {
+    const key = element.getAttribute("data-i18n-key");
+    const text = translationSet[key];
+    if (text) {
+      element.textContent = text;
+    }
+  });
 
-  if (!data.email) {
-    setFieldError("email", "Email address is required.");
-    isValid = false;
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    setFieldError("email", "Enter a valid email address.");
-    isValid = false;
-  }
+  i18nPlaceholders.forEach((element) => {
+    const key = element.getAttribute("data-i18n-placeholder-key");
+    const text = translationSet[key];
+    if (text) {
+      element.setAttribute("placeholder", text);
+    }
+  });
 
-  return isValid;
+  document.documentElement.lang = locale;
+  document.title = translationSet.documentTitle;
 }
 
-function updateBioCounter() {
-  const length = bioField.value.length;
-  bioCounter.textContent = `${length} / 200 characters`;
+function populateForm(settings) {
+  displayNameField.value = settings.displayName;
+  emailField.value = settings.email;
+  bioField.value = settings.bio;
+  themeField.value = settings.theme;
+  languageField.value = settings.language;
+  timezoneField.value = settings.timezone;
+  emailNotificationsField.checked = settings.emailNotifications;
+  pushNotificationsField.checked = settings.pushNotifications;
+  marketingEmailsField.checked = settings.marketingEmails;
+  profileVisibilityField.value = settings.profileVisibility;
+  shareUsageDataField.checked = settings.shareUsageData;
+
+  toggleFields.forEach((input) => {
+    input.setAttribute("aria-checked", String(input.checked));
+  });
+
+  applyTranslations(settings.language);
+  updateBioCounter();
+  applyTheme(settings.theme);
+}
+
+function getFormData() {
+  return {
+    displayName: displayNameField.value.trim(),
+    email: emailField.value.trim(),
+    bio: bioField.value.trim(),
+    theme: themeField.value,
+    language: languageField.value,
+    timezone: timezoneField.value,
+    emailNotifications: emailNotificationsField.checked,
+    pushNotifications: pushNotificationsField.checked,
+    marketingEmails: marketingEmailsField.checked,
+    profileVisibility: profileVisibilityField.value,
+    shareUsageData: shareUsageDataField.checked,
+  };
+}
+
+function validateForm(data) {
+  clearFieldErrors();
+  const validation = validateSettingsData(data);
+
+  if (!validation.isValid) {
+    if (validation.errors.displayName) {
+      setFieldError("display-name", validation.errors.displayName);
+    }
+
+    if (validation.errors.email) {
+      setFieldError("email", validation.errors.email);
+    }
+  }
+
+  return validation.isValid;
 }
 
 function handleToggleChange(event) {
@@ -149,7 +154,12 @@ function handleToggleChange(event) {
 }
 
 function handleThemeChange() {
-  applyTheme(form.theme.value);
+  applyTheme(themeField.value);
+}
+
+function handleLanguageChange() {
+  applyTranslations(languageField.value);
+  updateBioCounter();
 }
 
 function handleSubmit(event) {
@@ -158,12 +168,13 @@ function handleSubmit(event) {
   const data = getFormData();
 
   if (!validateForm(data)) {
-    showStatus("Please fix the errors below before saving.", "error");
+    showStatus(getLanguageText(data.language, "messagesValidation"), "error");
     return;
   }
 
-  saveSettings(data);
-  showStatus("Settings saved successfully.");
+  saveSettings(data, window.localStorage);
+  populateForm(data);
+  showStatus(getLanguageText(data.language, "messagesSaved"));
 }
 
 function handleReset() {
@@ -175,18 +186,20 @@ function handleReset() {
     return;
   }
 
-  localStorage.removeItem(STORAGE_KEY);
-  populateForm(DEFAULT_SETTINGS);
+  window.localStorage.removeItem(STORAGE_KEY);
+  const defaults = resetSettings(window.localStorage);
+  populateForm(defaults);
   clearFieldErrors();
-  showStatus("Settings reset to defaults.");
+  showStatus(getLanguageText(defaults.language, "messagesReset"));
 }
 
 bioField.addEventListener("input", updateBioCounter);
 themeField.addEventListener("change", handleThemeChange);
+languageField.addEventListener("change", handleLanguageChange);
 toggleFields.forEach((input) => {
   input.addEventListener("change", handleToggleChange);
 });
 form.addEventListener("submit", handleSubmit);
 resetButton.addEventListener("click", handleReset);
 
-populateForm(loadSettings());
+populateForm(loadSettings(window.localStorage));
