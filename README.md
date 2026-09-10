@@ -1,8 +1,10 @@
-# Frontend AI Capstone
+# Main Character Café ☕✨
 
-Capstone project for the **Front-End AI Engineering Internship at FlyRank AI**.
+A fictional coffee and lifestyle brand built as the capstone project for the **Front-End AI Engineering Internship at FlyRank AI**.
 
-The project is currently being developed as **Main Character Café**, a fictional coffee and lifestyle brand that will evolve into an AI-powered café experience.
+> Coffee for whatever chapter you're in.
+
+The project is being developed as an AI-powered café experience where users can eventually discover a coffee recommendation based on their current mood or "vibe."
 
 ## Tech Stack
 
@@ -13,49 +15,62 @@ The project is currently being developed as **Main Character Café**, a fictiona
 * Git & GitHub
 * Vercel
 
-## Project
+## Current Features
 
-### Main Character Café ☕✨
-
-> Coffee for whatever chapter you're in.
-
-Main Character Café is a fictional café concept designed around an AI-powered "Find Your Vibe" experience. Users will eventually be able to interact with an AI assistant to discover a café recommendation based on their current mood or vibe.
-
-The project is being developed incrementally as part of the internship capstone.
-
-## Current Progress
-
-### Week 3 — Capstone Skeleton
-
-* Next.js application scaffold
-* Shared root layout and navigation
 * Responsive homepage
-* Placeholder routes for all planned screens
-* Tailwind CSS design tokens
-* Health check API endpoint
+* Main navigation
+* Café menu route
+* Find Your Vibe route
+* Vibe result route
+* Our Story route
+* Journal route
+* Locations route
+* Favorites route
 * Health check page with fetched API data
-* Environment variable structure
-* Mobile and desktop responsive layouts
-* Production build verification
+* Server-side health API endpoint
+* Responsive layouts for desktop and mobile
 
 ## Routes
 
-| Route          | Purpose          |
-| -------------- | ---------------- |
-| `/`            | Homepage         |
-| `/menu`        | Café menu        |
-| `/vibe`        | Find Your Vibe   |
-| `/vibe/result` | Vibe result      |
-| `/story`       | Our Story        |
-| `/journal`     | Journal          |
-| `/locations`   | Locations        |
-| `/favorites`   | Favorites        |
-| `/health`      | Health check     |
-| `/api/health`  | Health check API |
+| Route          | Purpose                    |
+| -------------- | -------------------------- |
+| `/`            | Homepage                   |
+| `/menu`        | Café menu                  |
+| `/vibe`        | Find Your Vibe             |
+| `/vibe/result` | Vibe recommendation result |
+| `/story`       | Our Story                  |
+| `/journal`     | Café journal               |
+| `/locations`   | Café locations             |
+| `/favorites`   | Saved recommendations      |
+| `/health`      | Application health status  |
+| `/api/health`  | Health check API           |
+
+## Project Structure
+
+```text
+app/
+├── api/
+│   └── health/
+│       └── route.ts
+├── favorites/
+├── health/
+├── journal/
+├── locations/
+├── menu/
+├── story/
+├── vibe/
+│   └── result/
+├── globals.css
+├── layout.tsx
+└── page.tsx
+
+components/
+└── Navbar.tsx
+```
 
 ## Environment Variables
 
-Local environment variables are stored in `.env.local` and are excluded from version control.
+Environment variables are stored locally in `.env.local` and are excluded from version control.
 
 ```env
 AI_API_KEY=
@@ -71,29 +86,45 @@ Install dependencies:
 npm install
 ```
 
-Run the development server:
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-Then open `http://localhost:3000`.
+Then open:
+
+```text
+http://localhost:3000
+```
 
 ## Production Build
+
+To create a production build:
 
 ```bash
 npm run build
 ```
 
-The project currently builds successfully with no compilation or TypeScript errors.
+The project currently builds successfully with no TypeScript or compilation errors.
 
-## Internship Roadmap
+## Internship Progress
 
-The capstone will be developed across the internship tasks, gradually introducing:
+This repository is being developed incrementally throughout the **Front-End AI Engineering Internship**.
 
-* Accessible React components
-* Streaming AI interaction
-* AI-powered "Find Your Vibe" experience
-* Tool calls and tool results
-* Structured AI output
-* Production deployment
+### Week 3 — Capstone Skeleton
+
+* Next.js application scaffold
+* Application routes
+* Shared navigation and layout
+* Tailwind design tokens
+* Health check API
+* Fetched health data
+* Environment variable structure
+* Responsive layout
+* Production build verification
+* Vercel deployment
+
+### Coming Next
+
+The next stage will introduce the AI interaction for **Find Your Vibe**, followed by streaming responses, tool calls, and structured AI output.
