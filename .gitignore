@@ -1,11 +1,12 @@
 # Node.js
 node_modules/
+.next/
 
 # Logs
 *.log
 
 # Environment variables
-.env
+.env.local
 
 # macOS
 .DS_Store
